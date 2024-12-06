@@ -1,47 +1,55 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 
-const AddContact = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const history = useHistory();
+function AddContact({ addContact }) {
+  const [newContact, setNewContact] = useState({
+    firstName: '',
+    lastName: '',
+    email: ''
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNewContact({
+      ...newContact,
+      [name]: value
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newContact = { id: Date.now().toString(), firstName, lastName, email };
-    const savedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
-    savedContacts.push(newContact);
-    localStorage.setItem('contacts', JSON.stringify(savedContacts));
-    history.push('/contact-list');
+    addContact(newContact);
+    setNewContact({ firstName: '', lastName: '', email: '' });
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="First Name"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-        required
-      />
-      <input
-        type="text"
-        placeholder="Last Name"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-        required
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <button type="submit">Add Contact</button>
-    </form>
+    <div>
+      <h2>Add New Contact</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="firstName"
+          value={newContact.firstName}
+          onChange={handleChange}
+          placeholder="First Name"
+        />
+        <input
+          type="text"
+          name="lastName"
+          value={newContact.lastName}
+          onChange={handleChange}
+          placeholder="Last Name"
+        />
+        <input
+          type="email"
+          name="email"
+          value={newContact.email}
+          onChange={handleChange}
+          placeholder="Email"
+        />
+        <button type="submit">Add Contact</button>
+      </form>
+    </div>
   );
-};
+}
 
 export default AddContact;

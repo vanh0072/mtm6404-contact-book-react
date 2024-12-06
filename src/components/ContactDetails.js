@@ -1,33 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
-const ContactDetails = () => {
-  const { id } = useParams();
-  const history = useHistory();
+function ContactDetails({ contacts, editContact }) {
+  const { email } = useParams();
   const [contact, setContact] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const contacts = JSON.parse(localStorage.getItem('contacts')) || [];
-    const contact = contacts.find(contact => contact.id === id);
-    setContact(contact);
-  }, [id]);
+    const foundContact = contacts.find(contact => contact.email === email);
+    if (foundContact) {
+      setContact(foundContact);
+    } else {
+      navigate('/contact-list');
+    }
+  }, [contacts, email, navigate]);
 
-  const handleDelete = () => {
-    const contacts = JSON.parse(localStorage.getItem('contacts')) || [];
-    const updatedContacts = contacts.filter(contact => contact.id !== id);
-    localStorage.setItem('contacts', JSON.stringify(updatedContacts));
-    history.push('/contact-list');
+  const handleEdit = () => {
+    const updatedContact = { ...contact, firstName: 'Updated', lastName: 'Updated' };
+    editContact(updatedContact);
+    navigate('/contact-list');
   };
 
-  if (!contact) return <div>Loading...</div>;
+  if (!contact) return <p>Loading...</p>;
 
   return (
     <div>
-      <h2>{contact.firstName} {contact.lastName}</h2>
+      <h2>Contact Details</h2>
+      <p>First Name: {contact.firstName}</p>
+      <p>Last Name: {contact.lastName}</p>
       <p>Email: {contact.email}</p>
-      <button onClick={handleDelete}>Delete</button>
+      <button onClick={handleEdit}>Edit Contact</button>
     </div>
   );
-};
+}
 
 export default ContactDetails;
