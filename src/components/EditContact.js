@@ -1,47 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { db } from '../db';
+import { doc, updateDoc } from 'firebase/firestore';
 
-const EditContact = () => {
-  const { id } = useParams();
-  const [contact, setContact] = useState({});
+function EditContact({ contacts, editContact }) {
+  const { email } = useParams();
+  const contact = contacts.find(contact => contact.email === email);
+  const [firstName, setFirstName] = useState(contact.firstName);
+  const [lastName, setLastName] = useState(contact.lastName);
+  const [emailState, setEmailState] = useState(contact.email);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchedContact = { id, firstName: 'John', lastName: 'Doe', email: 'john@example.com' };
-    setContact(fetchedContact);
-  }, [id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate('/');
+    editContact({ firstName, lastName, email: emailState });
+    navigate('/contact-list');
   };
 
   return (
     <div>
       <h2>Edit Contact</h2>
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="First Name"
-          value={contact.firstName}
-          onChange={(e) => setContact({ ...contact, firstName: e.target.value })}
+        <input 
+          type="text" 
+          value={firstName} 
+          onChange={(e) => setFirstName(e.target.value)} 
         />
-        <input
-          type="text"
-          placeholder="Last Name"
-          value={contact.lastName}
-          onChange={(e) => setContact({ ...contact, lastName: e.target.value })}
+        <input 
+          type="text" 
+          value={lastName} 
+          onChange={(e) => setLastName(e.target.value)} 
         />
-        <input
-          type="email"
-          placeholder="Email"
-          value={contact.email}
-          onChange={(e) => setContact({ ...contact, email: e.target.value })}
+        <input 
+          type="email" 
+          value={emailState} 
+          onChange={(e) => setEmailState(e.target.value)} 
         />
-        <button type="submit">Update Contact</button>
+        <button type="submit">Save Changes</button>
       </form>
     </div>
   );
-};
+}
 
 export default EditContact;

@@ -1,27 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { db } from '../db';
+import { doc, getDoc } from 'firebase/firestore';
 
-function ContactDetails({ contacts, editContact }) {
+function ContactDetails({ contacts }) {
   const { email } = useParams();
-  const [contact, setContact] = useState(null);
-  const navigate = useNavigate();
+  const contact = contacts.find(contact => contact.email === email);
 
-  useEffect(() => {
-    const foundContact = contacts.find(contact => contact.email === email);
-    if (foundContact) {
-      setContact(foundContact);
-    } else {
-      navigate('/contact-list');
-    }
-  }, [contacts, email, navigate]);
-
-  const handleEdit = () => {
-    const updatedContact = { ...contact, firstName: 'Updated', lastName: 'Updated' };
-    editContact(updatedContact);
-    navigate('/contact-list');
-  };
-
-  if (!contact) return <p>Loading...</p>;
+  if (!contact) return <p>Contact not found.</p>;
 
   return (
     <div>
@@ -29,7 +15,6 @@ function ContactDetails({ contacts, editContact }) {
       <p>First Name: {contact.firstName}</p>
       <p>Last Name: {contact.lastName}</p>
       <p>Email: {contact.email}</p>
-      <button onClick={handleEdit}>Edit Contact</button>
     </div>
   );
 }
